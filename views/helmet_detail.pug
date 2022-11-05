@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+
+  div 
+    img(src=helmet.photoUrl , alt="Helmet Photo")
+    div 
+        h4 #{helmet.name}
+        p  #[strong Price:] #{helmet.price}
+        p  #[strong Code:] #{helmet.code}
+        p  #[strong Category:] #{helmet.category.name}

@@ -18,5 +18,11 @@ const HelmetSchema = new Schema({
 HelmetSchema.virtual("url").get(function () {
   return `/catalog/helmet/${this.id}`;
 });
+HelmetSchema.virtual("photoUrl").get(function () {
+  if (this.photo === undefined) {
+    return "/images/c91.jpeg";
+  }
+  return `/images/${this.photo}`;
+});
 
 module.exports = mongoose.model("helmet", HelmetSchema);

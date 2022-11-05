@@ -13,3 +13,5 @@ const HelmetInstanceSchema = new Schema({
 HelmetInstanceSchema.virtual("url").get(function () {
   return `/catalog/bookinstance/${this.id}`;
 });
+
+module.exports = mongoose.model("helmetinstance", HelmetInstanceSchema);

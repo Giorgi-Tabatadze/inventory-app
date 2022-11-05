@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  
+  h1 Statistics of your Shop
+
+  if error 
+    p Error getting dynamic content 
+  else 
+    p Your Shop has following records of your inventory 
+
+  ul  
+    each helmet in data 
+        a(href=helmet.url) 
+            div 
+                img(src=helmet.photoUrl, alt="")
+                h5 #{helmet.name}
+    
