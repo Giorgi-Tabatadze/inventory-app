@@ -3,14 +3,14 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  
-  h1 Statistics of your Shop
-
   if error 
     p Error getting dynamic content 
+  if(data[0] === undefined)  
+    p There are not helmets in this Category
   else 
     p Your Shop has following records of your inventory 
 
+  a(href="/catalog/helmet/create") Create New Helmet
   ul  
     each helmet in data 
         a(href=helmet.url) 

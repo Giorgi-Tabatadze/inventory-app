@@ -28,12 +28,10 @@ exports.index = (req, res) => {
       },
     },
     (err, results) => {
-      console.log(req.category_list);
       res.render("index", {
         title: "Helmet Inventory",
         error: err,
         data: results,
-        category_list: req.category_list,
       });
     },
   );
@@ -61,7 +59,6 @@ exports.helmet_detail = (req, res) => {
       } // successful, so render
       console.log(results.helmet_instance);
       res.render("helmet_detail", {
-        category_list: req.category_list,
         title: results.helmet.name,
         helmet: results.helmet,
         helmet_instances: results.helmet_instance,
