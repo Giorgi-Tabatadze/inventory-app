@@ -4,9 +4,19 @@ block content
   h1= title
 
   div 
-    img(src=helmet.photoUrl , alt="Helmet Photo")
+    img(src=helmet.photoUrl , alt="Helmet preview")
     div 
         h4 #{helmet.name}
         p  #[strong Price:] #{helmet.price}
         p  #[strong Code:] #{helmet.code}
-        p  #[strong Category:] #{helmet.category.name}
+        p  #[strong Category:] #{helmet.category[0].name}
+    div 
+        table 
+            each helmet_instance in helmet_instances
+                tr 
+                    td
+                        img(src=helmet_instance.photoUrl , alt="Helmet preview")
+                    td #[strong Size:] #{helmet_instance.size}
+                    td #[strong Color:] #{helmet_instance.color}
+                    td #[strong Amount:] #{helmet_instance.amount}
+

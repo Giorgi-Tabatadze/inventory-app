@@ -13,5 +13,11 @@ const HelmetInstanceSchema = new Schema({
 HelmetInstanceSchema.virtual("url").get(function () {
   return `/catalog/bookinstance/${this.id}`;
 });
+HelmetInstanceSchema.virtual("photoUrl").get(function () {
+  if (this.photo === undefined) {
+    return "/images/c91.jpeg";
+  }
+  return `/images/${this.photo}`;
+});
 
 module.exports = mongoose.model("helmetinstance", HelmetInstanceSchema);

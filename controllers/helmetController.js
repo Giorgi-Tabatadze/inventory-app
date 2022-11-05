@@ -12,7 +12,7 @@ exports.index = (req, res) => {
         Helmet.countDocuments({}, callback);
       },
       helmet_variation_count(callback) {
-        HelmetInstances.aggregate([
+        HelmetInstance.aggregate([
           {
             $group: {
               _id: null,
@@ -41,14 +41,15 @@ exports.index = (req, res) => {
 
 // Display detail page for a specific helmet.
 exports.helmet_detail = (req, res) => {
-  async.parallel({
-    helmet(callback) {
-      Helmet.findById(req.params.id).populate("category").exec(callback);
+  async.parallel(
+    {
+      helmet(callback) {
+        Helmet.findById(req.params.id).populate("category").exec(callback);
+      },
+      helmet_instance(callback) {
+        HelmetInstance.find({ helmet: req.params.id }).exec(callback);
+      },
     },
-    helmet_instance(callback) {
-      HelmetInstance.find({ helmet: req.params.id }).exec(callback);
-    },
-  }),
     (err, results) => {
       if (err) {
         return next(err);
@@ -58,13 +59,15 @@ exports.helmet_detail = (req, res) => {
         err.status = 404;
         return next(err);
       } // successful, so render
+      console.log(results.helmet_instance);
       res.render("helmet_detail", {
         category_list: req.category_list,
         title: results.helmet.name,
         helmet: results.helmet,
         helmet_instances: results.helmet_instance,
       });
-    };
+    },
+  );
 };
 
 // Display helmet create form on GET.
