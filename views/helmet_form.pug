@@ -3,7 +3,7 @@ extends layout
 block content
   h1= title
   
-  form(action="", method="post") 
+  form(action="", method="post" enctype="multipart/form-data") 
     div.form-group 
         label(for="name") Name: 
         input#name.form-control(required type="text", name="name" value=(helmet  === undefined ? "": helmet.name))
@@ -24,6 +24,8 @@ block content
                     ) #{category.name}
                 else 
                     option(value=category._id) #{category.name}
+        label(for="helmet_photo") Please Upload Photo (Max: 1MB): 
+        input#helmet_photo.form-control(type="file" name="helmet_photo")
     
 
     button.btn.btn-primary(type="submit") Submit 

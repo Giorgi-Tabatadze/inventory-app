@@ -3,7 +3,10 @@ const HelmetInstance = require("../models/helmetinstance");
 const Category = require("../models/category");
 const path = require("path");
 const { body, validationResult } = require("express-validator");
+const multer = require("multer");
+const fs = require("fs");
 
+const multerController = require("../controllers/multercontroller");
 const async = require("async");
 
 exports.index = (req, res) => {
@@ -58,7 +61,6 @@ exports.helmet_detail = (req, res) => {
         err.status = 404;
         return next(err);
       } // successful, so render
-      console.log(results.helmet_instance);
       res.render("helmet_detail", {
         title: results.helmet.name,
         helmet: results.helmet,
@@ -76,6 +78,25 @@ exports.helmet_create_get = (req, res, next) => {
 };
 // Handle helmet create on POST.
 exports.helmet_create_post = [
+  (req, res, next) => {
+    multerController.upload(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        console.log(err);
+
+        if (err.code === "LIMIT_FILE_SIZE") {
+          req.fileUploadError = { msg: "exeeded file size limit" };
+        }
+        if (err.code === "LIMIT_UNEXPECTED_FILE") {
+          req.fileUploadError = { msg: "File type is not accepted" };
+        }
+      } else if (err) {
+        console.log("regular error" + err);
+        return next(err);
+      }
+      next();
+    });
+  },
+
   body("name", "Name must have at least 3 characters.")
     .trim()
     .isLength({ min: 3 })
@@ -94,20 +115,30 @@ exports.helmet_create_post = [
   (req, res, next) => {
     const errors = validationResult(req);
 
+    const errorsArray = errors.array();
+    if (req.fileUploadError) errorsArray.push(req.fileUploadError);
     const helmet = new Helmet({
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
       code: req.body.code,
       category: req.body.category,
+      photo: req.file.filename,
     });
+    console.log(req.file);
 
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty() || req.fileUploadError) {
       res.render("helmet_form", {
         title: "Create Helmet",
-        errors: errors.array(),
+        errors: errorsArray,
         helmet,
       });
+      if (req.file) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) next(err);
+          console.log("file deleted");
+        });
+      }
     } else {
       helmet.save((err) => {
         if (err) {

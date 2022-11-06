@@ -36,7 +36,6 @@ exports.category_specific_get = (req, res) => {
       return next(err);
     }
     // successful, render list of all helmets
-    console.log(helmets_list);
     res.render("helmets_list", {
       title: "List of Helmets",
       error: err,
