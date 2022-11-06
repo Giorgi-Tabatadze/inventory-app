@@ -4,7 +4,7 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all categorys.
 exports.category_list_middleware = (req, res, next) => {
-  Category.find({}, "name").exec(function (err, category_list) {
+  Category.find({}).exec(function (err, category_list) {
     if (err) {
       return next(err);
     }

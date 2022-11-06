@@ -2,6 +2,7 @@ const Helmet = require("../models/helmet");
 const HelmetInstance = require("../models/helmetinstance");
 const Category = require("../models/category");
 const path = require("path");
+const { body, validationResult } = require("express-validator");
 
 const async = require("async");
 
@@ -68,14 +69,55 @@ exports.helmet_detail = (req, res) => {
 };
 
 // Display helmet create form on GET.
-exports.helmet_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmet create GET");
+exports.helmet_create_get = (req, res, next) => {
+  res.render("helmet_form", {
+    title: "Create Helmet",
+  });
 };
-
 // Handle helmet create on POST.
-exports.helmet_create_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmet create POST");
-};
+exports.helmet_create_post = [
+  body("name", "Name must have at least 3 characters.")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Price must be specified")
+    .isNumeric()
+    .withMessage("Price must be a number"),
+  body("description").trim().escape(),
+  body("code", "Code must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("category").trim().escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const helmet = new Helmet({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      code: req.body.code,
+      category: req.body.category,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("helmet_form", {
+        title: "Create Helmet",
+        errors: errors.array(),
+        helmet,
+      });
+    } else {
+      helmet.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(helmet.url);
+      });
+    }
+  },
+];
 
 // Display helmet delete form on GET.
 exports.helmet_delete_get = (req, res) => {
