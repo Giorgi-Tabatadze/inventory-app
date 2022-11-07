@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  h1= title
+  
+  form(action="/catalog/helmetinstance/create", method="post" enctype="multipart/form-data") 
+    div.form-group 
+            label(for="helmet") Helmet: 
+            select#helmet.form-control(type='select' placeholder='Select Helmet' name='helmet' required='true' )  
+                for category in category_list
+                    optgroup(label=category.name)     
+                        for helmet in helmet_list
+                            if category._id == helmet.category.toString() 
+                                if helmet_instance 
+                                    option(value=helmet._id
+                                    selected=(helmet._id.toString() == helmet_instance.helmet ? "selected" : false) 
+                                    ) #{helmet.name}
+                                else 
+                                    option(value=helmet._id) #{helmet.name}
+    div.form-group 
+        label(for="size") Size: 
+        input#size.form-control(required type="text", name="size" value=(helmet_instance.size   === undefined ? "": helmet_instance.size))
+        label(for="color") Color: 
+        input#color.form-control(required type="text", name="color" value=(helmet_instance.color  === undefined ? "": helmet_instance.color))
+        label(for="amount") Amount : 
+        input#amount.form-control(required type="number", name="amount" value=(helmet_instance.amount  === undefined ? "": helmet_instance.amount))
+    div.form-group 
+        label(for="helmet_photo") Please Upload Photo (Max: 1MB): 
+        input#helmet_photo.form-control(type="file" name="helmet_intance_photo")
+    button.btn.btn-primary(type="submit") Submit 
+
+    if errors 
+        ul 
+            for error in errors 
+                li!= error.msg 

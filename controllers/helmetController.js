@@ -123,7 +123,7 @@ exports.helmet_create_post = [
       price: req.body.price,
       code: req.body.code,
       category: req.body.category,
-      photo: req.file.filename,
+      photo: req.file != undefined ? req.file.filename : undefined,
     });
     console.log(req.file);
 

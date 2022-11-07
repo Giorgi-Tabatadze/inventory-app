@@ -11,6 +11,7 @@ block content
         p  #[strong Code:] #{helmet.code}
         p  #[strong Category:] #{helmet.category[0].name}
     div 
+        a(href=`/catalog/helmetinstance/create/${helmet._id}`) Create new helmet instance
         table 
             each helmet_instance in helmet_instances
                 tr 
@@ -19,4 +20,6 @@ block content
                     td #[strong Size:] #{helmet_instance.size}
                     td #[strong Color:] #{helmet_instance.color}
                     td #[strong Amount:] #{helmet_instance.amount}
+                    td #[a(href="/") Amount:] #{helmet_instance.amount}
+
 

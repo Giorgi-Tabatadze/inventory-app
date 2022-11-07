@@ -42,3 +42,24 @@ exports.upload = multer({
     }
   },
 }).single("helmet_photo");
+
+exports.upload_helmet_Intance = multer({
+  storage: storage,
+  limits: {
+    fileSize,
+    file: 1,
+  },
+  fileFilter: function (req, file, cb) {
+    const filetypes = /jpeg|jpg|png|gif/;
+    const extname = filetypes.test(
+      path.extname(file.originalname).toLowerCase(),
+    );
+    const mimetype = filetypes.test(file.mimetype);
+
+    if (mimetype && extname) return cb(null, true);
+    else {
+      cb(null, false);
+      req.fileUploadError = { msg: "File type is not accepted" };
+    }
+  },
+}).single("helmet_intance_photo");

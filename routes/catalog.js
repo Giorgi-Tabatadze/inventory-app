@@ -67,6 +67,10 @@ router.get("/categories", category_controller.category_all_get);
 
 // GET request for creating helmet instance
 router.get(
+  "/helmetinstance/create/:id",
+  helmet_instance_controller.helmetinstance_create_get,
+);
+router.get(
   "/helmetinstance/create",
   helmet_instance_controller.helmetinstance_create_get,
 );
