@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    h1= title
+ 
+    if (!helmets_list.length)
+        div 
+                form(action="", method="post") 
+                    h4 Are you sure you want to delete this category?
+                    label(for="password") Admin Password: 
+                    input#password.form-control(required type="password", name="password")
+                    input#category_id.form-control(type='hidden',name='category_id', required='true', value=category._id )
+                    button.btn.btn-primary(type="submit") Submit 
+    if helmets_list.length 
+        h3 #[strong Delete following helmets before attempting to delete this category]
+
+        each helmet in helmets_list 
+            a(href=helmet.url) 
+                div 
+                    img(src=helmet.photoUrl, alt="")
+                    h5 #{helmet.name}
+    if errors 
+        ul 
+            for error in errors 
+                li!= error.msg 

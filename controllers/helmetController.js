@@ -151,14 +151,79 @@ exports.helmet_create_post = [
 ];
 
 // Display helmet delete form on GET.
-exports.helmet_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmet delete GET");
+exports.helmet_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      helmet(callback) {
+        Helmet.findById(req.params.id).populate("category").exec(callback);
+      },
+      helmet_instances(callback) {
+        HelmetInstance.find({ helmet: req.params.id }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (results.helmet == null) {
+        res.redirect("/catalog/categories");
+      }
+      res.render("helmet_delete", {
+        title: "Delete Helmet",
+        helmet: results.helmet,
+        helmet_instances: results.helmet_instances,
+      });
+    },
+  );
 };
 
 // Handle helmet delete on POST.
-exports.helmet_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmet delete POST");
-};
+exports.helmet_delete_post = [
+  body("password", "incorrect password!")
+    .trim()
+    .isLength({ min: 1, max: 20 })
+    .equals("123")
+    .escape(),
+  body("helmet_id").trim().escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    async.parallel(
+      {
+        helmet(callback) {
+          Helmet.findById(req.body.helmet_id)
+            .populate("category")
+            .exec(callback);
+        },
+        helmet_instances(callback) {
+          HelmetInstance.find({ helmet: req.body.helmet_id }).exec(callback);
+        },
+      },
+      (err, results) => {
+        if (err) {
+          return next(err);
+        }
+        if (results.helmet_instances.length > 0 || !errors.isEmpty()) {
+          res.render("helmet_delete", {
+            title: "Delete Helmet",
+            helmet: results.helmet,
+            helmet_instances: results.helmet_instances,
+            errors: errors.array(),
+          });
+        } else {
+          Helmet.findByIdAndRemove(req.body.helmet_id, (err) => {
+            if (err) {
+              return next(err);
+            }
+            console.log(results.helmet);
+            res.redirect(`/catalog/category/${results.helmet.category[0]._id}`);
+          });
+        }
+      },
+    );
+  },
+];
 
 // Display helmet update form on GET.
 exports.helmet_update_get = (req, res) => {

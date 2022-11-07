@@ -2,17 +2,18 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
   if error 
     p Error getting dynamic content 
-  if(data[0] === undefined)  
+  if(helmets_list[0] === undefined)  
     p There are not helmets in this Category
   else 
-    p Your Shop has following records of your inventory 
+    p You have following helmets in this Category 
 
+  if category
+    a(href=`/catalog/category/${category._id}/delete`) Delete this category 
   a(href="/catalog/helmet/create") Create New Helmet
   ul  
-    each helmet in data 
+    each helmet in helmets_list 
         a(href=helmet.url) 
             div 
                 img(src=helmet.photoUrl, alt="")

@@ -141,6 +141,7 @@ exports.helmetinstance_delete_post = [
     .isLength({ min: 1, max: 20 })
     .equals("123")
     .escape(),
+  body("helmet_intance_id").trim().escape(),
 
   (req, res, next) => {
     const errors = validationResult(req);

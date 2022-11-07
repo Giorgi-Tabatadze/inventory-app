@@ -11,15 +11,16 @@ block content
         p  #[strong Code:] #{helmet.code}
         p  #[strong Category:] #{helmet.category[0].name}
     div 
+        a(href=`/catalog/helmet/${helmet._id}/delete`) Delete Helmet 
         a(href=`/catalog/helmetinstance/create/${helmet._id}`) Create new helmet instance
         table 
             each helmet_instance in helmet_instances
                 tr 
                     td
                         img(src=helmet_instance.photoUrl , alt="Helmet preview")
-                    td #[strong Size:] #{helmet_instance.size}
-                    td #[strong Color:] #{helmet_instance.color}
-                    td #[strong Amount:] #{helmet_instance.amount}
-                    td #[a(href=`/catalog/helmetinstance/${helmet_instance._id}/delete`) DELETE] 
+                        td #[strong Size:] #{helmet_instance.size}
+                        td #[strong Color:] #{helmet_instance.color}
+                        td #[strong Amount:] #{helmet_instance.amount}
+                        td #[a(href=`/catalog/helmetinstance/${helmet_instance._id}/delete`) DELETE] 
 
 

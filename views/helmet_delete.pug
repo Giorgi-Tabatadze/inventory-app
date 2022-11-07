@@ -1,0 +1,37 @@
+extends layout
+
+block content
+    h1= title
+
+    div 
+        img(src=helmet.photoUrl , alt="Helmet preview")
+        div 
+            h4 #{helmet.name}
+            p  #[strong Price:] #{helmet.price}
+            p  #[strong Code:] #{helmet.code}
+            p  #[strong Category:] #{helmet.category[0].name}
+    if (!helmet_instances.length)
+        div 
+                form(action="", method="post") 
+                    h4 Are you sure you want to delete this helmet instance?
+                    label(for="password") Admin Password: 
+                    input#password.form-control(required type="password", name="password")
+                    input#helmet_id.form-control(type='hidden',name='helmet_id', required='true', value=helmet._id )
+                    button.btn.btn-primary(type="submit") Submit 
+    if helmet_instances.length 
+        h3 #[strong Delete the following helmet intances before attempting to delete this helmet]
+
+        table 
+                each helmet_instance in helmet_instances
+                    tr 
+                        td
+                            img(src=helmet_instance.photoUrl , alt="Helmet preview")
+                            td #[strong Size:] #{helmet_instance.size}
+                            td #[strong Color:] #{helmet_instance.color}
+                            td #[strong Amount:] #{helmet_instance.amount}
+                            td #[a(href=`/catalog/helmetinstance/${helmet_instance._id}/delete`) DELETE] 
+    if errors 
+        ul 
+            for error in errors 
+                li!= error.msg 
+
