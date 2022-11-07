@@ -110,21 +110,67 @@ exports.helmetinstance_create_post = [
         if (err) {
           return next(err);
         }
-        res.redirect(helmet_instance.helmet.url);
+        res.redirect(`/catalog/helmet/${req.body.helmet}`);
       });
     }
   },
 ];
 
 // Display helmetInstance delete form on GET.
-exports.helmetinstance_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmetInstance delete GET");
+exports.helmetinstance_delete_get = (req, res, next) => {
+  HelmetInstance.findById(req.params.id)
+    .populate("helmet")
+    .exec(function (err, helmet_instance) {
+      if (err) {
+        return next(err);
+      }
+      if (helmet_instance == null) {
+        res.redirect("/catalog/categories");
+      }
+      res.render("helmet_instance_delete", {
+        title: helmet_instance.helmet.name,
+        helmet_instance,
+      });
+    });
 };
 
 // Handle helmetInstance delete on POST.
-exports.helmetinstance_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmetInstance delete POST");
-};
+exports.helmetinstance_delete_post = [
+  body("password", "incorrect password!")
+    .trim()
+    .isLength({ min: 1, max: 20 })
+    .equals("123")
+    .escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    HelmetInstance.findById(req.body.helmet_intance_id)
+      .populate("helmet")
+      .exec(function (err, helmet_instance) {
+        if (err) {
+          return next(err);
+        }
+        if (!errors.isEmpty()) {
+          res.render("helmet_instance_delete", {
+            title: helmet_instance.helmet.name,
+            helmet_instance,
+            errors: errors.array(),
+          });
+        } else {
+          HelmetInstance.findByIdAndRemove(
+            req.body.helmet_intance_id,
+            (err) => {
+              if (err) {
+                return next(err);
+              }
+              res.redirect(`/catalog/helmet/${helmet_instance.helmet._id}`);
+            },
+          );
+        }
+      });
+  },
+];
 
 // Display helmetInstance update form on GET.
 exports.helmetinstance_update_get = (req, res) => {
