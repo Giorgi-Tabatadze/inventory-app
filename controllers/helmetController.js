@@ -135,7 +135,7 @@ exports.helmet_create_post = [
       });
       if (req.file) {
         fs.unlink(req.file.path, (err) => {
-          if (err) next(err);
+          if (err) return next(err);
           console.log("file deleted");
         });
       }
@@ -212,12 +212,18 @@ exports.helmet_delete_post = [
             errors: errors.array(),
           });
         } else {
+          const photoToDelete = results.helmet.deletePhotoUrl;
           Helmet.findByIdAndRemove(req.body.helmet_id, (err) => {
             if (err) {
               return next(err);
             }
-            console.log(results.helmet);
-            res.redirect(`/catalog/category/${results.helmet.category[0]._id}`);
+            fs.unlink(photoToDelete, (err) => {
+              if (err) return next(err);
+              console.log("file deleted");
+              res.redirect(
+                `/catalog/category/${results.helmet.category[0]._id}`,
+              );
+            });
           });
         }
       },

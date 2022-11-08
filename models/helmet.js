@@ -23,5 +23,11 @@ HelmetSchema.virtual("photoUrl").get(function () {
   }
   return `/images/${this.photo}`;
 });
+HelmetSchema.virtual("deletePhotoUrl").get(function () {
+  if (this.photo === undefined) {
+    return "";
+  }
+  return `images/${this.photo}`;
+});
 
 module.exports = mongoose.model("helmet", HelmetSchema);
