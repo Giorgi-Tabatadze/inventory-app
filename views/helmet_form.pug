@@ -8,7 +8,7 @@ block content
         label(for="name") Name: 
         input#name.form-control(required type="text", name="name" value=(helmet  === undefined ? "": helmet.name))
         label(for="description") Description: 
-        textarea#description.form-control(name="description", cols="30", rows="10")
+        textarea#description.form-control(name="description", cols="30", rows="10") #{helmet === undefined ? "" : helmet.description}
     div.form-group 
         label(for="price") Price: 
         input#price.form-control(required type="number", name="price" value=(helmet  === undefined ? "": helmet.price))

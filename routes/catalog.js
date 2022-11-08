@@ -76,6 +76,10 @@ router.get(
 );
 // POST request for creating helmet instance
 router.post(
+  "/helmetinstance/create/:id",
+  helmet_instance_controller.helmetinstance_create_post,
+);
+router.post(
   "/helmetinstance/create",
   helmet_instance_controller.helmetinstance_create_post,
 );

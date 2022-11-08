@@ -77,7 +77,7 @@ exports.category_create_post = [
   (req, res, next) => {
     const errors = validationResult(req);
 
-    const category = new Category({ name: req.body.name.toLowerCase() });
+    const category = new Category({ name: req.body.name });
 
     if (!errors.isEmpty()) {
       res.render("category_form", {
@@ -179,11 +179,52 @@ exports.category_delete_post = [
 ];
 
 // Display category update form on GET.
-exports.category_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: category update GET");
+exports.category_update_get = (req, res, next) => {
+  Category.findById(req.params.id).exec((err, category) => {
+    if (err) {
+      return next(err);
+    }
+    if (category == null) {
+      const err = new Error("Category not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("category_form", {
+      title: "Update Category",
+      category,
+    });
+  });
 };
 
 // Handle category update on POST.
-exports.category_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: category update POST");
-};
+exports.category_update_post = [
+  body("name", "Category name Should be at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const category = new Category({ name: req.body.name, _id: req.params.id });
+
+    if (!errors.isEmpty()) {
+      res.render("category_form", {
+        title: "Update Category",
+        category,
+        errors: errors.array(),
+      });
+    } else {
+      Category.findByIdAndUpdate(
+        req.params.id,
+        category,
+        (err, thecategory) => {
+          if (err) {
+            return next(err);
+          }
+          res.redirect(thecategory.url);
+        },
+      );
+    }
+  },
+];

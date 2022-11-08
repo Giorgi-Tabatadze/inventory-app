@@ -97,6 +97,7 @@ exports.helmetinstance_create_post = [
           title: "Create Helmet Instance",
           helmet_list,
           helmet_instance,
+          errors: errors.array(),
         });
         if (req.file) {
           fs.unlink(req.file.path, (err) => {
@@ -180,11 +181,133 @@ exports.helmetinstance_delete_post = [
 ];
 
 // Display helmetInstance update form on GET.
-exports.helmetinstance_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmetInstance update GET");
+exports.helmetinstance_update_get = (req, res, next) => {
+  async.parallel(
+    {
+      helmet_list(callback) {
+        Helmet.find().exec(callback);
+      },
+      helmet_instance(callback) {
+        HelmetInstance.findById(req.params.id).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      res.render("helmet_instance_form", {
+        title: "Update Helmet Instance",
+        helmet_list: results.helmet_list,
+        helmet_instance: results.helmet_instance,
+      });
+    },
+  );
 };
 
 // Handle helmetinstance update on POST.
-exports.helmetinstance_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmetInstance update POST");
-};
+exports.helmetinstance_update_post = [
+  (req, res, next) => {
+    multerController.upload_helmet_Intance(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        console.log(err);
+
+        if (err.code === "LIMIT_FILE_SIZE") {
+          req.fileUploadError = { msg: "exeeded file size limit" };
+        }
+        if (err.code === "LIMIT_UNEXPECTED_FILE") {
+          req.fileUploadError = { msg: "File type is not accepted" };
+        }
+      } else if (err) {
+        console.log("regular error" + err);
+        return next(err);
+      }
+      next();
+    });
+  },
+
+  body("size", "Size must be min: 1 character and max: 20 characters long")
+    .trim()
+    .isLength({ min: 1, max: 20 })
+    .escape(),
+  body("amount")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("amount must be specified")
+    .isNumeric()
+    .isInt({ min: 1 })
+    .withMessage("Price must be a whole number"),
+  body("color", "Color must be min: 1 character and max: 20 characters long")
+    .trim()
+    .isLength({ min: 1, max: 40 })
+    .escape(),
+  body("helmet", "Helmet must be selected")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const errorsArray = errors.array();
+    if (req.fileUploadError) errorsArray.push(req.fileUploadError);
+
+    async.parallel(
+      {
+        helmet_list(callback) {
+          Helmet.find().exec(callback);
+        },
+        helmet_instance(callback) {
+          HelmetInstance.findById(req.params.id).exec(callback);
+        },
+      },
+      (err, results) => {
+        if (err) {
+          next(err);
+        }
+        const helmet_instance = new HelmetInstance({
+          helmet: req.body.helmet,
+          amount: req.body.amount,
+          size: req.body.size,
+          color: req.body.color,
+          amount: req.body.amount,
+          photo:
+            req.file != undefined
+              ? req.file.filename
+              : results.helmet_instance.photo,
+          _id: req.params.id,
+        });
+
+        if (!errors.isEmpty() || req.fileUploadError) {
+          res.render("helmet_instance_form", {
+            title: "Update Helmet Instance",
+            helmet_list: results.helmet_list,
+            helmet_instance,
+            errors: errors.array(),
+          });
+          if (req.file) {
+            fs.unlink(req.file.path, (err) => {
+              if (err) return next(err);
+            });
+          }
+        } else {
+          HelmetInstance.findByIdAndUpdate(
+            req.params.id,
+            helmet_instance,
+            (err, thehelmet_instance) => {
+              if (err) {
+                return next(err);
+              }
+              res.redirect(`/catalog/helmet/${thehelmet_instance.helmet}`);
+              if (results.helmet_instance.deletePhotoUrl && req.file) {
+                fs.unlink(results.helmet_instance.deletePhotoUrl, (err) => {
+                  if (err) return next(err);
+                });
+              }
+            },
+          );
+        }
+      },
+    );
+  },
+];

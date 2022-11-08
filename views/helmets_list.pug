@@ -11,6 +11,8 @@ block content
 
   if category
     a(href=`/catalog/category/${category._id}/delete`) Delete this category 
+    a(href=`/catalog/category/${category._id}/update`) Update this category 
+
   a(href="/catalog/helmet/create") Create New Helmet
   ul  
     each helmet in helmets_list 

@@ -136,7 +136,6 @@ exports.helmet_create_post = [
       if (req.file) {
         fs.unlink(req.file.path, (err) => {
           if (err) return next(err);
-          console.log("file deleted");
         });
       }
     } else {
@@ -232,11 +231,100 @@ exports.helmet_delete_post = [
 ];
 
 // Display helmet update form on GET.
-exports.helmet_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmet update GET");
+exports.helmet_update_get = (req, res, next) => {
+  Helmet.findById(req.params.id).exec((err, helmet) => {
+    if (err) {
+      return next(err);
+    }
+    if (helmet == null) {
+      const err = new Error("Helmet not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("helmet_form", {
+      title: "Update Helmet",
+      helmet,
+    });
+  });
 };
 
 // Handle helmet update on POST.
-exports.helmet_update_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: helmet update POST");
-};
+exports.helmet_update_post = [
+  (req, res, next) => {
+    multerController.upload(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          req.fileUploadError = { msg: "exeeded file size limit" };
+        }
+        if (err.code === "LIMIT_UNEXPECTED_FILE") {
+          req.fileUploadError = { msg: "File type is not accepted" };
+        }
+      } else if (err) {
+        return next(err);
+      }
+      next();
+    });
+  },
+
+  body("name", "Name must have at least 3 characters.")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Price must be specified")
+    .isNumeric()
+    .withMessage("Price must be a number"),
+  body("description").trim().escape(),
+  body("code", "Code must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("category").trim().escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const errorsArray = errors.array();
+    if (req.fileUploadError) errorsArray.push(req.fileUploadError);
+
+    Helmet.findById(req.params.id).exec((err, helmet_found) => {
+      if (err) {
+        return next(err);
+      }
+      const helmet = new Helmet({
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        code: req.body.code,
+        category: req.body.category,
+        photo: req.file != undefined ? req.file.filename : helmet_found.photo,
+        _id: req.params.id,
+      });
+
+      if (!errors.isEmpty() || req.fileUploadError) {
+        res.render("helmet_form", {
+          title: "Update Helmet",
+          errors: errorsArray,
+          helmet,
+        });
+        if (req.file) {
+          fs.unlink(req.file.path, (err) => {
+            if (err) return next(err);
+          });
+        }
+      } else {
+        Helmet.findByIdAndUpdate(req.params.id, helmet, (err, thehelmet) => {
+          if (err) {
+            return next(err);
+          }
+          res.redirect(thehelmet.url);
+          if (helmet_found.deletePhotoUrl && req.file) {
+            fs.unlink(helmet_found.deletePhotoUrl, (err) => {
+              if (err) return next(err);
+            });
+          }
+        });
+      }
+    });
+  },
+];
