@@ -217,13 +217,13 @@ exports.helmet_delete_post = [
             if (err) {
               return next(err);
             }
-            fs.unlink(photoToDelete, (err) => {
-              if (err) return next(err);
-              console.log("file deleted");
-              res.redirect(
-                `/catalog/category/${results.helmet.category[0]._id}`,
-              );
-            });
+            res.redirect(`/catalog/category/${results.helmet.category[0]._id}`);
+            if (photoToDelete) {
+              fs.unlink(photoToDelete, (err) => {
+                if (err) return next(err);
+                console.log("file deleted");
+              });
+            }
           });
         }
       },

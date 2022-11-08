@@ -19,5 +19,11 @@ HelmetInstanceSchema.virtual("photoUrl").get(function () {
   }
   return `/images/${this.photo}`;
 });
+HelmetInstanceSchema.virtual("deletePhotoUrl").get(function () {
+  if (this.photo === undefined) {
+    return false;
+  }
+  return `images/${this.photo}`;
+});
 
 module.exports = mongoose.model("helmetinstance", HelmetInstanceSchema);

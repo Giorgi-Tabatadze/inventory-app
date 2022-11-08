@@ -25,7 +25,7 @@ HelmetSchema.virtual("photoUrl").get(function () {
 });
 HelmetSchema.virtual("deletePhotoUrl").get(function () {
   if (this.photo === undefined) {
-    return "";
+    return false;
   }
   return `images/${this.photo}`;
 });

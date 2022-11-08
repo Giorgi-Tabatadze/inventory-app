@@ -100,8 +100,7 @@ exports.helmetinstance_create_post = [
         });
         if (req.file) {
           fs.unlink(req.file.path, (err) => {
-            if (err) next(err);
-            console.log("file deleted");
+            if (err) return next(err);
           });
         }
       });
@@ -159,6 +158,7 @@ exports.helmetinstance_delete_post = [
             errors: errors.array(),
           });
         } else {
+          const photoToDelete = helmet_instance.deletePhotoUrl;
           HelmetInstance.findByIdAndRemove(
             req.body.helmet_intance_id,
             (err) => {
@@ -166,6 +166,12 @@ exports.helmetinstance_delete_post = [
                 return next(err);
               }
               res.redirect(`/catalog/helmet/${helmet_instance.helmet._id}`);
+              if (photoToDelete) {
+                fs.unlink(photoToDelete, (err) => {
+                  if (err) return next(err);
+                  console.log("file deleted");
+                });
+              }
             },
           );
         }
