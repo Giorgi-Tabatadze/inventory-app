@@ -13,20 +13,20 @@ html(lang='en')
       div(class='row')
         div(class='col-sm-2')
           block sidebar
-            ul(class='sidebar-nav')
-              li
-                a(href='/catalog') Home
+            ul(class='nav flex-column')
+              li.nav-item
+                a(href='/catalog' class="nav-link active") Home
               
               hr
 
               h6  Categories 
-              li
-                a(href='/catalog/categories') All Items 
+              li.nav-item
+                a(href='/catalog/categories' class="nav-link active") All Items 
               each category in category_list 
-                li
-                  a(href=category.url) #{category.name} 
-              li
-                a(href='/catalog/category/create') Create new category
+                li.nav-item
+                  a(href=category.url class="nav-link active") #{category.name} 
+              li.nav-item
+                a(href='/catalog/category/create' class="nav-link active") Create new category
               
 
         div(class='col-sm-10')

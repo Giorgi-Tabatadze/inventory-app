@@ -81,8 +81,6 @@ exports.helmet_create_post = [
   (req, res, next) => {
     multerController.upload(req, res, function (err) {
       if (err instanceof multer.MulterError) {
-        console.log(err);
-
         if (err.code === "LIMIT_FILE_SIZE") {
           req.fileUploadError = { msg: "exeeded file size limit" };
         }
@@ -90,7 +88,6 @@ exports.helmet_create_post = [
           req.fileUploadError = { msg: "File type is not accepted" };
         }
       } else if (err) {
-        console.log("regular error" + err);
         return next(err);
       }
       next();
@@ -125,7 +122,6 @@ exports.helmet_create_post = [
       category: req.body.category,
       photo: req.file != undefined ? req.file.filename : undefined,
     });
-    console.log(req.file);
 
     if (!errors.isEmpty() || req.fileUploadError) {
       res.render("helmet_form", {
@@ -220,7 +216,6 @@ exports.helmet_delete_post = [
             if (photoToDelete) {
               fs.unlink(photoToDelete, (err) => {
                 if (err) return next(err);
-                console.log("file deleted");
               });
             }
           });

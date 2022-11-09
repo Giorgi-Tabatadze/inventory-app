@@ -37,8 +37,6 @@ exports.helmetinstance_create_post = [
   (req, res, next) => {
     multerController.upload_helmet_Intance(req, res, function (err) {
       if (err instanceof multer.MulterError) {
-        console.log(err);
-
         if (err.code === "LIMIT_FILE_SIZE") {
           req.fileUploadError = { msg: "exeeded file size limit" };
         }
@@ -46,7 +44,6 @@ exports.helmetinstance_create_post = [
           req.fileUploadError = { msg: "File type is not accepted" };
         }
       } else if (err) {
-        console.log("regular error" + err);
         return next(err);
       }
       next();
@@ -170,7 +167,6 @@ exports.helmetinstance_delete_post = [
               if (photoToDelete) {
                 fs.unlink(photoToDelete, (err) => {
                   if (err) return next(err);
-                  console.log("file deleted");
                 });
               }
             },
@@ -209,8 +205,6 @@ exports.helmetinstance_update_post = [
   (req, res, next) => {
     multerController.upload_helmet_Intance(req, res, function (err) {
       if (err instanceof multer.MulterError) {
-        console.log(err);
-
         if (err.code === "LIMIT_FILE_SIZE") {
           req.fileUploadError = { msg: "exeeded file size limit" };
         }
@@ -218,7 +212,6 @@ exports.helmetinstance_update_post = [
           req.fileUploadError = { msg: "File type is not accepted" };
         }
       } else if (err) {
-        console.log("regular error" + err);
         return next(err);
       }
       next();

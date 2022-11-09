@@ -9,15 +9,20 @@ block content
   else 
     p You have following helmets in this Category 
 
-  if category
-    a(href=`/catalog/category/${category._id}/delete`) Delete this category 
-    a(href=`/catalog/category/${category._id}/update`) Update this category 
+  div.btn-group
+    a(href="/catalog/helmet/create") 
+      button.btn.btn-secondary Create New Helmet
+    if category
+      a(href=`/catalog/category/${category._id}/update`) 
+        button.btn.btn-secondary Update Category 
+      a(href=`/catalog/category/${category._id}/delete`) 
+        button.btn.btn-secondary Delete Category 
 
-  a(href="/catalog/helmet/create") Create New Helmet
-  ul  
+
+  div.row
     each helmet in helmets_list 
-        a(href=helmet.url) 
-            div 
-                img(src=helmet.photoUrl, alt="")
-                h5 #{helmet.name}
-    
+          .card.col-sm-4
+            img.card-img-top(src=helmet.photoUrl, alt="")
+            div.card-body
+                a.card-title(href=helmet.url) #{helmet.name}
+

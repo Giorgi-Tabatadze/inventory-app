@@ -14,11 +14,12 @@ block content
     if helmets_list.length 
         h3 #[strong Delete following helmets before attempting to delete this category]
 
-        each helmet in helmets_list 
-            a(href=helmet.url) 
-                div 
-                    img(src=helmet.photoUrl, alt="")
-                    h5 #{helmet.name}
+        div.row
+            each helmet in helmets_list 
+                .card.col-sm-4
+                    img.card-img-top(src=helmet.photoUrl, alt="")
+                    div.card-body
+                        a.card-title(href=helmet.url) #{helmet.name}
     if errors 
         ul 
             for error in errors 

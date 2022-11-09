@@ -10,21 +10,27 @@ block content
         p  #[strong Price:] #{helmet.price}
         p  #[strong Code:] #{helmet.code}
         p  #[strong Category:] #{helmet.category[0].name}
-    div 
-        a(href=`/catalog/helmet/${helmet._id}/delete`) Delete Helmet 
-        a(href=`/catalog/helmet/${helmet._id}/update`) Update Helmet 
+    div.btn-group
+        a(href=`/catalog/helmetinstance/create/${helmet._id}`)
+            button.btn.btn-secondary Create new helmet instance
+        a(href=`/catalog/helmet/${helmet._id}/update`) 
+            button.btn.btn-secondary Update Helmet 
+        a(href=`/catalog/helmet/${helmet._id}/delete`) 
+            button.btn.btn-secondary Delete Helmet 
+        
 
-        a(href=`/catalog/helmetinstance/create/${helmet._id}`) Create new helmet instance
-        table 
-            each helmet_instance in helmet_instances
-                tr 
-                    td
-                        img(src=helmet_instance.photoUrl , alt="Helmet preview")
-                        td #[strong Size:] #{helmet_instance.size}
-                        td #[strong Color:] #{helmet_instance.color}
-                        td #[strong Amount:] #{helmet_instance.amount}
-                        td #[a(href=`/catalog/helmetinstance/${helmet_instance._id}/delete`) DELETE] 
-                        td #[a(href=`/catalog/helmetinstance/${helmet_instance._id}/update`) UPDATE] 
+       
+    .row 
+        each helmet_instance in helmet_instances
+            .card.col-sm-4
+                img.card-img-top(src=helmet_instance.photoUrl , alt="Helmet preview")
+                div.card-body
+                    p #[strong Size:] #{helmet_instance.size}
+                    p #[strong Color:] #{helmet_instance.color}
+                    p #[strong Amount:] #{helmet_instance.amount}
+                    a.btn.btn-secondary(href=`/catalog/helmetinstance/${helmet_instance._id}/update`) Update
+                    a.btn.btn-secondary(href=`/catalog/helmetinstance/${helmet_instance._id}/delete`) Delete
+
 
 
 
